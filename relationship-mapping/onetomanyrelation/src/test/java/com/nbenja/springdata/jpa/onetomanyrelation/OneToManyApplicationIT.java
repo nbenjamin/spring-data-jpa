@@ -1,5 +1,6 @@
 package com.nbenja.springdata.jpa.onetomanyrelation;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = OneToManyApplication.class)
 public class OneToManyApplicationIT {
@@ -29,21 +32,30 @@ public class OneToManyApplicationIT {
 	public void before() {
 		User user = new User();
 		user.setFirstName("Tom");
-		user.setLastName("Jerry");
-		user.setUserName("tomAndJerry");
+		user.setLastName("JerryTest");
+		user.setUserName("tomAndJerryTest");
 		user.setPassword("password");
+
+		Group group = new Group("TestGroup", user);
+		user.setGroups(Collections.singleton(group));
 		userRepository.save(user);
 
-		Group group = new Group();
-		group.setGroupName("TestGroup");
-		group.setUser(user);
-		groupRepository.save(group);
 	}
 
 	@Test
 	public void oneToMany_validateResults_afterDbInsertion() {
+		User actual = userRepository.findByFirstNameAndLastName("Tom", "JerryTest");
+		assertThat(actual, is(notNullValue()));
+		assertThat(actual.getGroups().stream().findFirst().get().getGroupName(), is(equalTo
+				("TestGroup")));
+	}
+
+	@Test
+	public void oneToMany_validateOneToMany_returnUserWithMultipleGroup() {
+		//inserted as part of the application start up - commandLineRunner @see OneToManyApplication
 		User actual = userRepository.findByFirstNameAndLastName("Tom", "Jerry");
 		assertThat(actual, is(notNullValue()));
+		assertThat(actual.getGroups().size(), is(equalTo(2)));
 	}
 
 }

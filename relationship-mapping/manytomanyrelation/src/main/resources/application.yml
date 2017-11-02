@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: many-to-many-relation
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+#logging:
+#  level:
+#    org.springframework : error

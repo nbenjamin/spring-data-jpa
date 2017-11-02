@@ -1,22 +1,23 @@
 package com.nbenja.springdata.jpa.manytomanyrelation.domain;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "groups")
 public class Group implements Serializable {
 
@@ -24,7 +25,13 @@ public class Group implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long groupId;
     private String groupName;
-    @ManyToOne
-//    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+
+    @ManyToMany(mappedBy = "groups")
+    //@ManyToMany
+    //@JoinColumn(name = "userId", nullable = false)
+    private Set<User> users;
+
+    public Group(String groupName) {
+        this.groupName = groupName;
+    }
 }
